@@ -1,121 +1,2418 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <title>Encadrements – Mémoires et thèses</title>
-
-  <!-- ESSENTIEL pour Google Sites / iframe -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Encadrements – Étudiants</title>
 
   <style>
-    /* Reset minimal et typographie sobre */
+    :root{
+      --border:#ddd;
+      --muted:#666;
+      --bg:#fff;
+      --bg2:#fafafa;
+      --head:#f3f3f3;
+      --link:#0645ad;
+    }
     body{
       margin:0;
       padding:16px;
       font-family: Arial, Helvetica, sans-serif;
       color:#222;
+      background:var(--bg);
+    }
+    header{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    h1{
+      font-size:18px;
+      margin:0;
+      font-weight:700;
+    }
+    .subtitle{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    /* Barre d’outils */
+    .toolbar{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin:12px 0 14px 0;
+      padding:10px;
+      background:var(--bg2);
+      border:1px solid var(--border);
+      border-radius:10px;
+    }
+    .toolbar label{
+      font-size:13px;
+      color:#333;
+    }
+    .toolbar input[type="search"],
+    .toolbar select{
+      font-size:14px;
+      padding:8px 10px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:#fff;
+      min-width:180px;
+    }
+    .toolbar .small{
+      min-width:140px;
+    }
+    .toolbar .right{
+      margin-left:auto;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .btn{
+      font-size:13px;
+      padding:8px 10px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:#fff;
+      cursor:pointer;
+    }
+    .btn:hover{ background:#f7f7f7; }
+    .pill{
+      font-size:12px;
+      color:var(--muted);
+      padding:6px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
       background:#fff;
     }
 
-    h1{
-      font-size:18px;
-      margin:0 0 12px 0;
-      font-weight:600;
+    /* Accordéons par année */
+    .year-group{
+      border:1px solid var(--border);
+      border-radius:12px;
+      margin:10px 0;
+      overflow:hidden;
+      background:#fff;
+    }
+    .year-header{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 12px;
+      background:var(--head);
+      cursor:pointer;
+      user-select:none;
+    }
+    .year-header strong{ font-size:15px; }
+    .year-header span{ color:var(--muted); font-size:12px; }
+    .year-content{
+      padding:10px 12px 6px 12px;
+      display:none;
+    }
+    .year-group.open .year-content{ display:block; }
+
+    /* Cartes d’entrées */
+    .entry{
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:10px 12px;
+      margin:8px 0;
+      background:#fff;
+    }
+    .entry-top{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .title{
+      font-weight:700;
+      font-size:14px;
+      margin:0 0 4px 0;
+    }
+    .title a{ color:var(--link); text-decoration:none; }
+    .title a:hover{ text-decoration:underline; }
+
+    .meta{
+      font-size:13px;
+      color:#333;
+      margin:0;
+    }
+    .meta .muted{ color:var(--muted); }
+    .tags{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:8px;
+    }
+    .tag{
+      font-size:12px;
+      padding:4px 8px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:var(--bg2);
+      color:#333;
     }
 
-    /* Conteneur scrollable pour écrans étroits / iframe */
-    .table-wrap{
-      overflow-x:auto;
-      -webkit-overflow-scrolling:touch;
-    }
-
+    /* Table fallback (si JS désactivé) */
+    .table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
     table{
       width:100%;
       border-collapse:collapse;
       font-size:14px;
       line-height:1.35;
-      min-width:900px; /* empêche l’écrasement */
+      min-width:900px;
     }
-
     th, td{
-      border:1px solid #ddd;
+      border:1px solid var(--border);
       padding:8px 10px;
       vertical-align:top;
     }
+    thead th{ background:var(--head); text-align:left; }
+    tbody tr:nth-child(even){ background:var(--bg2); }
+    td:nth-child(1), td:nth-child(2){ text-align:right; white-space:nowrap; }
 
-    thead th{
-      background:#f3f3f3;
-      font-weight:600;
-      text-align:left;
-      position:sticky;
-      top:0;
-      z-index:1;
-    }
+    /* Visibilité */
+    .hidden{ display:none !important; }
 
-    tbody tr:nth-child(even){
-      background:#fafafa;
-    }
-
-    /* Colonnes numériques */
-    td:nth-child(1),
-    td:nth-child(2){
-      text-align:right;
-      white-space:nowrap;
-    }
-
-    /* Liens */
-    a{
-      color:#0645ad;
-      text-decoration:none;
-    }
-    a:hover{
-      text-decoration:underline;
-    }
-
-    /* Responsive léger */
     @media (max-width: 900px){
-      body{padding:8px}
-      h1{font-size:16px}
+      body{ padding:10px; }
+      .toolbar input[type="search"], .toolbar select{ min-width: 150px; }
     }
   </style>
 </head>
 
 <body>
+  <header>
+    <div>
+      <h1 id="pageTitle">Encadrements de mémoires et thèses</h1>
+      <div class="subtitle" id="pageSubtitle">Recherche, filtres et regroupement par année.</div>
+    </div>
 
-<h1>Encadrements de mémoires et thèses</h1>
+    <div class="right">
+      <button class="btn" id="langBtn" type="button">EN</button>
+      <span class="pill" id="countPill">…</span>
+    </div>
+  </header>
 
-<div class="table-wrap">
-<table>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Année</th>
-      <th>Titre</th>
-      <th>Étudiant·e</th>
-      <th>Programme</th>
-      <th>Notes</th>
-    </tr>
-  </thead>
+  <div class="toolbar" role="region" aria-label="Outils">
+    <label id="lblSearch" for="q">Recherche</label>
+    <input id="q" type="search" placeholder="Nom, titre, programme…" />
 
-  <tbody>
+    <label id="lblYear" for="yearSel">Année</label>
+    <select id="yearSel" class="small">
+      <option value="">Toutes</option>
+    </select>
 
-    <!-- COLLEZ ICI VOS <tr> ... </tr> SANS LES MODIFIER -->
-    <!-- Exemple (le vôtre fonctionne tel quel) -->
+    <label id="lblProg" for="progSel">Programme</label>
+    <select id="progSel">
+      <option value="">Tous</option>
+    </select>
 
-    <tr>
-      <td>1</td>
-      <td>2026</td>
-      <td>Effet des volets du Programme Objectif-Emploi sur la sortie de l'aide sociale</td>
-      <td>Diabaté, Wambley Karl Ibrahim</td>
-      <td>Maîtrise (codirecteur)</td>
-      <td></td>
-    </tr>
+    <div class="right">
+      <button class="btn" id="expandAll" type="button">Tout ouvrir</button>
+      <button class="btn" id="collapseAll" type="button">Tout fermer</button>
+      <button class="btn" id="resetBtn" type="button">Réinitialiser</button>
+    </div>
+  </div>
 
-    <!-- … tout votre contenu existant … -->
+  <!-- Vue améliorée (JS) -->
+  <div id="app"></div>
 
-  </tbody>
-</table>
-</div>
+  <!-- Fallback : votre table originale (reste utile) -->
+  <div id="fallback" class="table-wrap">
+    <table id="rawTable" class="table">
+      <thead>
+        <tr>
+          <th>#</th><th>Année</th><th>Titre</th><th>Étudiant·e</th><th>Programme</th><th>Notes</th>
+        </tr>
+      </thead>
 
+      <!-- ✅ COLLEZ ICI TOUTES VOS LIGNES <tr>…</tr> -->
+      <tbody id="data-body">
+        <!-- Exemple : remplacez par votre liste complète -->
+        <!--
+
+        <tr>
+            <td>
+                1
+            </td>
+            <td>
+                2026
+            </td>
+            <td>
+                Effet des volets du Programme Objectif-Emploi sur la sortie de l'aide sociale: une approche fondée sur l’assignation quasi-aléatoire des agents d’emploi
+            </td>
+            <td>
+                Diabaté, Wambley Karl Ibrahim
+            </td>
+            <td>
+                Maîtrise (codirecteur)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                2
+            </td>
+            <td>
+                2025
+            </td>
+            <td>
+                Analyse des performances en lecture, mathématiques et en sciences des élèves canadiens: facteurs déterminants et Enjeux
+            </td>
+            <td>
+                Balde, Yaya
+            </td>
+            <td>
+                Maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                3
+            </td>
+            <td>
+                2025
+            </td>
+            <td>
+                Effets des centres à la petite enfance sur les résultatsscolaires à long terme
+            </td>
+            <td>
+                Harinantenaina,Annette Rabemanana,&nbsp;
+            </td>
+            <td>
+                Maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                4
+            </td>
+            <td>
+                2024
+            </td>
+            <td>
+                Beyond Birth: In-utero Health Shock, Maternal Earnings, and Intergenerational Health Pathways
+            </td>
+            <td>
+                Bello, Abdel-Hamid
+            </td>
+            <td>
+                Doctorat (codirection: Maripier Isablelle)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                5
+            </td>
+            <td>
+                2024
+            </td>
+            <td>
+                Évaluation de l’influence du temps d’incarcération sur la probabilité de récidive criminelle: données probantes du Québec
+            </td>
+            <td>
+                Auger, Charlotte
+            </td>
+            <td>
+                Maîtrise avec mémoire&nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                6
+            </td>
+            <td>
+                2024
+            </td>
+            <td>
+                L'outil RBAC et la prédiction de la récidive criminelle : Une analyse par l'intelligence artificielle
+            </td>
+            <td>
+                Bacon, Félix
+            </td>
+            <td>
+                Maîtrise avec mémoire&nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                7
+            </td>
+            <td>
+                2024
+            </td>
+            <td>
+                Alzheimer et pollution: évidence empirique de faibles niveaux de particules en suspension comme facteur de risque
+            </td>
+            <td>
+                Beaulieu, Louis-Philippe
+            </td>
+            <td>
+                Maîtrise avec mémoire (codirecteur)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                8
+            </td>
+            <td>
+                2024
+            </td>
+            <td>
+                Évaluation économique de l’effet des ententes internationales en matière de mobilité étudiante au Québec
+            </td>
+            <td>
+                Brown, Myriam (codirecteur)
+            </td>
+            <td>
+                Maîtrise avec mémoire&nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                9
+            </td>
+            <td>
+                2024
+            </td>
+            <td>
+                Pénalité due à la maternité : couples hétérosexuels vs couples homosexuels
+            </td>
+            <td>
+                Caissy, Victoria
+            </td>
+            <td>
+                Maîtrise avec mémoire&nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                10
+            </td>
+            <td>
+                2024
+            </td>
+            <td>
+                Évaluation de l'effet du programme préscolaire Passe-Partout sur la réussite éducative : une analyse par appariement sur score de propension et apprentissage automatique causal
+            </td>
+            <td>
+                Hamel, Marie-lin
+            </td>
+            <td>
+                Maîtrise avec mémoire&nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                11
+            </td>
+            <td>
+                2023
+            </td>
+            <td>
+                Étude des disparités dans les durées de sentence entre les hommes et les femmes
+            </td>
+            <td>
+                Brahimi, Karima
+            </td>
+            <td>
+                Maîtrise avec mémoire&nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                12
+            </td>
+            <td>
+                2023
+            </td>
+            <td>
+                Les anticipations et choix individuels face à la COVID-19
+            </td>
+            <td>
+                Forgues, Rosalie
+            </td>
+            <td>
+                Maîtrise avec mémoire
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                13
+            </td>
+            <td>
+                2023
+            </td>
+            <td>
+                Un crédit d'impôt ciblé peut-il retarder l'âge de la retraite ? Données probantes du Québec.
+            </td>
+            <td>
+                Galienne, Samy&nbsp;
+            </td>
+            <td>
+                Maîtrise avec mémoire&nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                14
+            </td>
+            <td>
+                2023
+            </td>
+            <td>
+                Prédire le renoncement à la libération conditionnelle: une approche par apprentissage automatique
+            </td>
+            <td>
+                Lokossou, Fiacre
+            </td>
+            <td>
+                Maîtrise avec mémoire
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                15
+            </td>
+            <td>
+                2023
+            </td>
+            <td>
+                Une analyse économétrique des transitions entre le décrochage et le raccrochage scolaires
+            </td>
+            <td>
+                Trudelle, Mathieu
+            </td>
+            <td>
+                Maîtrise avec mémoire
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                16
+            </td>
+            <td>
+                2022
+            </td>
+            <td>
+                Les déterminants de la réussite scolaire dans les centres de services scolaires au Québec : une analyse économétrique avec données de panel
+            </td>
+            <td>
+                Rabarijaona, Toavina
+            </td>
+            <td>
+                Maîtrise avec essai
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                17
+            </td>
+            <td>
+                2022
+            </td>
+            <td>
+                Analyse des coûts et de l’adhérence au protocole des hernies ombilicales pédiatriques
+            </td>
+            <td>
+                Rondeau, Félix
+            </td>
+            <td>
+                Maîtrise avec essai
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                18
+            </td>
+            <td>
+                2022
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/entities/publication/c260e67b-2e62-49a5-be0e-ae4621404fdf">Impacts du redoublement sur les résultats scolaires : effets de la réforme québécoise de 2008</a>
+            </td>
+            <td>
+                Martin, Alexis&nbsp;
+            </td>
+            <td>
+                Maîtrise avec mémoire (codirecteur)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                19
+            </td>
+            <td>
+                2021
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/entities/publication/4f228e65-0303-4be6-aa61-c20f2997a664">Participation à un programme de réinsertion sociale et évolution du potentiel criminogène: données probantes du Québec</a>
+            </td>
+            <td>
+                Faucher, Ariane&nbsp;
+            </td>
+            <td>
+                Maîtrise avec mémoire (codirecteur)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                20
+            </td>
+            <td>
+                2021
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/browse/author?scope=32fa194e-af6e-41d8-bde3-fae02aed6899&amp;bbm.page=1&amp;value=Laveault-Allard,%20Pascale#:~:text=Les%20effets%20de%20la%20d%C3%A9favorisation%20mat%C3%A9rielle%20et%20sociale%20sur%20les%20co%C3%BBts%20et%20les%20trajectoires%20de%20soins%20et%20services%20en%20p%C3%A9rinatalit%C3%A9">Les effets de la défavorisation matérielle et sociale sur les coûts et les trajectoires de soins et services sur les coûts et les trajectoires de soins et services en périnatalité</a>
+            </td>
+            <td>
+                Laveault-Allard, Pascale
+            </td>
+            <td>
+                Maîtrise avec mémoire
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                21
+            </td>
+            <td>
+                2021
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/entities/publication/1c51013a-d85d-4524-8c4b-8567b9e8d3b8">Sévérité des sanctions et récidive criminelle : identification au moyen d’une reforme canadienne</a>
+            </td>
+            <td>
+                Raymond, Nicolas
+            </td>
+            <td>
+                Maîtrise avec mémoire
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                22
+            </td>
+            <td>
+                2020
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/entities/publication/ee5ea08f-eb04-4d99-972e-7af78bf1792f">Three Essays on Spatial Health Econometrics</a>
+            </td>
+            <td>
+                Gnintedem, Bodel Aymele
+            </td>
+            <td>
+                Doctorat
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                23
+            </td>
+            <td>
+                2020
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/entities/publication/ec7a40b0-f9f5-485b-aab4-f4ce121fed35">L’impact des mesures d’insertion sociale destinées aux détenus québécois sur le risque de récidive</a>
+            </td>
+            <td>
+                Iriart, Alejandro
+            </td>
+            <td>
+                Mémoire de maîtrise (codirecteur)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                24
+            </td>
+            <td>
+                2020
+            </td>
+            <td>
+                Les mesures fiscales en régions ressources : Encourager l’investissement ou l’emploi
+            </td>
+            <td>
+                LeBlanc, Alexis
+            </td>
+            <td>
+                Essai de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                25
+            </td>
+            <td>
+                2020
+            </td>
+            <td>
+                Analyse des déterminants d’une déclaration de contraintes sévères à l’emploi
+            </td>
+            <td>
+                Delort, Lauren
+            </td>
+            <td>
+                Mémoire de maîtrise (HEC)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                26
+            </td>
+            <td>
+                2020
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Morgane Plantier, Université Lyon-I
+            </td>
+            <td>
+                Stage doctoral
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                27
+            </td>
+            <td>
+                2020
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/entities/publication/6f6e431f-e8c8-4e85-8c29-730154284ac6">Programmes d’aide à l’emploi et solidarité sociale : Analyse causale des effets de la participation par l’approche des forêts aléatoires</a>
+            </td>
+            <td>
+                Rancourt, Marie-Pierre
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                28
+            </td>
+            <td>
+                2019
+            </td>
+            <td>
+                Analyse du décrochage scolaire en économie : Théorie et exploration de données.
+            </td>
+            <td>
+                Blais, Philippe
+            </td>
+            <td>
+                Essai de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                29
+            </td>
+            <td>
+                2019
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/entities/publication/391307b4-066d-4987-9c98-11f854b6ab9f">Three Essays on the Impact of Financial Incentives, Waiting Times and Home Care on Patients’ Health and Utilization of Health Care Services in Quebec</a>
+            </td>
+            <td>
+                Golo, Kossi Thomas
+            </td>
+            <td>
+                Doctorat
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                30
+            </td>
+            <td>
+                2019
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/entities/publication/d7237bd0-9a58-4f0c-bbb2-ae5cf88c3720">Three essays on the Return on investment in human capital of skilled immigrants in Quebec and internal labor migration in developing countries</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=c3c4a8f0-099d-4ad0-a71f-5948dbdbbc18">Djuikom, Marie Albertine</a>
+            </td>
+            <td>
+                Doctorat
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                31
+            </td>
+            <td>
+                2019
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/33867">Choix occupationnels et espérance de vie : une analyse par l'approche des données massives</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=b07618fa-a6a7-472f-bf9b-f4c2cdadfbf0">Pageau, Jasmine</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                32
+            </td>
+            <td>
+                2018
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/34170">Impact of economic conditions and marriage market on inmates' recidivism : a longitudinal analysis</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=c5751ea3-7bff-4cbd-b2a0-82836a3300e4">Arbour, William</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                33
+            </td>
+            <td>
+                2018
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/31583">Les entrées et les sorties de la pauvreté au Québec et en Ontario : une analyse comparative</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=3f8f74fd-7990-4dd2-81cc-6995f27eeb41">Bernard, Marie-Pier</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                34
+            </td>
+            <td>
+                2018
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/30983">Évaluation des mesures de soutien aux personnes et aux familles : une approche par microsimulations comptables et comportementales</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=49e9aff1-5722-49ca-a498-950b6099c7bf">Clavet, Nicholas-James</a>
+            </td>
+            <td>
+                Doctorat
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                35
+            </td>
+            <td>
+                2016
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/27416">Trois essais sur l'impact des incitatifs financiers sur la productivité du système de la santé au Québec</a>
+            </td>
+            <td>
+                El Ghali, Nizar
+            </td>
+            <td>
+                Doctorat (codirecteur)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                36
+            </td>
+            <td>
+                2016
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/27125">L'impact des formations formelles sur le revenu et la durée du chômage des immigrants qualifiés dès l'arrivée au Québec</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=0404a029-457c-4146-9239-129db1be05d8">Agbantey, Ariel Jean Philippe</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                37
+            </td>
+            <td>
+                2016
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/26771">Sexe de l'enfant et investissement parental : le cas d'Haïti</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=80a3f337-b28f-48c0-ac02-299d0846848a">Pyram, Sonel</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                38
+            </td>
+            <td>
+                2016
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/26616">L'effet des heures supplémentaires sur les conditions sanitaires des nouveau-nés en unité de néonatalogie : une analyse économétrique</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=e7743b1a-3313-491a-aa5c-a44227aefacc">Corneau-Tremblay, Nicolas</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                39
+            </td>
+            <td>
+                2016
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/26615">Situation des autochtones urbains au Canada : estimation de la discrimination</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=8004cccc-64b2-48a9-920a-a76c5f557bb7">Girard, Nikolas</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                40
+            </td>
+            <td>
+                2015
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/26419">Discrimination à l'embauche des candidats d'origine maghrébine dans la région de la Capitale-Nationale</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=fd16442c-8fc3-4b52-b460-28936ce57e66">Brière, Simon</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                41
+            </td>
+            <td>
+                2015
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/26268">Analyse de réformes au programme de solidarité sociale du Québec</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=d7d83285-5094-4d3d-a2f7-21693651fb1f">Bérubé-Mimeault, Nathaniel</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                42
+            </td>
+            <td>
+                2015
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/25925">Resserrement du critère d'autonomie financière et insertion en emploi des immigrants qualifiés au Québec</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=1c12ef16-8bf4-4d42-bdf3-7e67fe6ded43">Beaulieu, Evans</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                43
+            </td>
+            <td>
+                2015
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/25773">Tests non paramétriques de spécification pour densité conditionnelle : application à des modèles de choix discret</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=a61209e4-5e9c-4109-9173-033e5103132a">Amegble, Koami Dzigbodi</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                44
+            </td>
+            <td>
+                2015
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/25731">L'écart salarial entre les hommes et les femmes immigrants qualifiés au Québec</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=b8b87792-c8f0-4364-8223-b84c78e48b99">Longpré Verret, Léamaude</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                45
+            </td>
+            <td>
+                2014
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/25596">Non-random panel attrition : comparison of two alternative estimations</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=280d7633-d909-406f-a3c2-3ef9f54253c3">Vachon, Patrice</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                46
+            </td>
+            <td>
+                2014
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/25351">L'effet sur le salaire de l'adéquation formation-emploi chez les immigrants qualifiés au Québec</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=23f73edc-c3f7-4f7f-abac-3edeaddd0591">Simard, Mathieu</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                47
+            </td>
+            <td>
+                2014
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Yann Kossi, Université Lyon-II
+            </td>
+            <td>
+                Stage doctoral
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                48
+            </td>
+            <td>
+                2014
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/24780">Les déterminants du travail domestique des enfants dans l'unité familiale en Côte d'Ivoire : aspects extensifs et intensifs</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=d165bfd7-b431-41d6-955d-f2a8c15668d6">Boly, Hermance</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                49
+            </td>
+            <td>
+                2013
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/24708">Analyse de l'efficacité d'action emploi par régression discontinue</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=2bf6fcee-8e6a-422c-bc14-22e3d24cd46e">Vigneault, Thomas</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                50
+            </td>
+            <td>
+                2013
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/24080">Québec's Family Policy : an evaluation using regression discontinuity design</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=a61d9471-e98e-41e5-a915-4f8b479ffe92">Mainville, Lois</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                51
+            </td>
+            <td>
+                2013
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/23959">Performance scolaire dans les écoles en présence d'asymétrie dans les effets de pairs</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=12a5ccc5-c8bf-48fc-b3aa-9b632a5d475c">Djibril Tourawa, Abdoul Aziz</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                52
+            </td>
+            <td>
+                2013
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Beugnot, Julie, Université de Montpellier
+            </td>
+            <td>
+                Post-doctorante
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                53
+            </td>
+            <td>
+                2012
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/24069">Réévaluation du programme Action emploi Québécois</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=d4b8b7c8-b1d9-4792-8b52-d80268c455a4">Aouli, Essolaba</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                54
+            </td>
+            <td>
+                2012
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/23843">Conciliation travail-études : un phénomène épidémique? : analyse de l'impact du conformisme social dans les décisions de travail des adolescents</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=21ca71c1-46ac-46a4-8633-9553c189d167">Isabelle, Maripier</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                55
+            </td>
+            <td>
+                2012
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Hoareau, Stéphane, Université de La Réunion
+            </td>
+            <td>
+                Post-doctorant
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                56
+            </td>
+            <td>
+                2011
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/22833">Les conséquences nutritionnelles de la crise alimentaire et les réponses politiques : estimation d'un système de demande individuelle au Bangladesh</a>
+            </td>
+            <td>
+                Azzalini, Marco
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                57
+            </td>
+            <td>
+                2008
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/20149">Trois essais sur les primes au travail</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=0c256faf-2b7f-4670-a11a-938bc84020af">Brouillette, Dany</a>
+            </td>
+            <td>
+                Doctorat (codirecteur)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                58
+            </td>
+            <td>
+                2008
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/19811">Détermination de l'impact du programme Action emploi sur les taux de retour à l'assistance-emploi au Québec</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=c743434f-b2df-41b4-9017-4e8c4053db35">Ruel, Marie-Claude</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                59
+            </td>
+            <td>
+                2007
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/19406">Analyse économétrique de l'itinéraire thérapeutique des ménages de Côte d'Ivoire</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=ae014f8a-8cf9-46ac-9d80-cb57f5ac085f">Tape, Yagba Bernardin</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                60
+            </td>
+            <td>
+                2007
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/19316">L'impact du cancer du sein sur les transitions sur le marché du travail</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=161160d4-c2e2-4682-954e-8a854af24e1d">Gagnon, Isabelle</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                61
+            </td>
+            <td>
+                2007
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/19292">Santé et conditions de vie dans la France du dix-neuvième siècle</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=5fc316a0-4919-40a8-81f1-dca321003a54">Leblanc, Josée</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                62
+            </td>
+            <td>
+                2007
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/19001">Situation au travail pour les femmes atteintes de cancer du sein</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=e6f03ab3-797a-4930-9925-922ee41c4548">Leclerc, Audrey</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                63
+            </td>
+            <td>
+                2007
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/18883">Les effets de la Prime au Travail sur l'offre de travail des femmes en couple</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=4faee1ba-7b87-4765-998c-2caf1d18833a">Lafond-Bélanger, Gabrielle</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                64
+            </td>
+            <td>
+                2007
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/18907">Impact de la prime au travail sur l'offre de travail : une évaluation ex-ante</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=69c491ef-23dc-4281-a839-d90af6171a60">Parisé, Hélène</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                65
+            </td>
+            <td>
+                2007
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=1032987593">Analyse économétrique de l'itinéraire thérapeutique des ménages de Côte d'Ivoire.</a>
+            </td>
+            <td>
+                Yagba, Bernardin TAPÉ
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                66
+            </td>
+            <td>
+                2007
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=1032879503">Santé et conditions de vie dans la France du dix-neuvième siècle.</a>
+            </td>
+            <td>
+                Leblanc, Josée
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                67
+            </td>
+            <td>
+                2007
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=224903933">Les effets de la Prime au Travail sur l'offre de travail des femmes en couple</a>
+            </td>
+            <td>
+                Lafond-Bélanger, Gabrielle
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                68
+            </td>
+            <td>
+                2007
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Nathalia Rachenko, Université Paris-I
+            </td>
+            <td>
+                Stage doctoral
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                69
+            </td>
+            <td>
+                2007
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=1032872063">Évolution de la polarisation au Canada : 1973-2003.</a>
+            </td>
+            <td>
+                Goyette, Marc-André&nbsp;
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                70
+            </td>
+            <td>
+                2006
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/handle/20.500.11794/18525">L'impact du programme Action Emploi sur les taux de sortie de l'aide sociale</a>
+            </td>
+            <td>
+                <a href="https://corpus.ulaval.ca/jspui/browse?type=author&amp;authority=a3216b0f-0a1d-48b0-acd4-96cc89e655ba">Côté, Louis-David</a>
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                71
+            </td>
+            <td>
+                2005
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=63466042">Un regard sur la taille de l'économie souterraine : une méthode d'estimation pour le Québec.</a>
+            </td>
+            <td>
+                Pinard, Dominique
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                72
+            </td>
+            <td>
+                2004
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=60318536">L'impact des 35 heures sur l'offre de travail familiale : une analyse économetrique sur données françaises.</a>
+            </td>
+            <td>
+                Bunel, Matthieu&nbsp;
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                73
+            </td>
+            <td>
+                2004
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=57430368">Rationalité collective des ménages comportant plusieurs membres : résultats théoriques et applications au Burkina Faso.</a>
+            </td>
+            <td>
+                Dauphin, Annick
+            </td>
+            <td>
+                Doctorat (codirecteur)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                74
+            </td>
+            <td>
+                2003
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=56920604">Analyse coût-efficacité du sumatriptan et d'un composé d'isométheptène, d'acétaminophène et de dichloralphénazone dans le traitement de la migraine.</a>
+            </td>
+            <td>
+                Brouard, Marie-Ève
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                75
+            </td>
+            <td>
+                2003
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=1006698360">Rationalité collective et rôle des enfants dans le processus de décision intrafamilial.</a>
+            </td>
+            <td>
+                Belley, Philippe
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                76
+            </td>
+            <td>
+                2003
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=57639128">La participation à l'aide sociale des populations immigrante et native au Québec.</a>
+            </td>
+            <td>
+                Brochu, Magalie
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                77
+            </td>
+            <td>
+                2003
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=57393298">L'impact de la réforme fiscale fédérale de 1987 sur l'offre de travail : une approche par expérience naturelle.</a>
+            </td>
+            <td>
+                Paradis-Béland, Olivier
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                78
+            </td>
+            <td>
+                2003
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=55104935">Analyse théorique et empirique des différences de salaire et de carrière entre hommes et femmes.</a>
+            </td>
+            <td>
+                Havet, Nathalie
+            </td>
+            <td>
+                Doctorat
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                79
+            </td>
+            <td>
+                2002
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=56631997">Offre de travail au noir et effet de voisinage.</a>
+            </td>
+            <td>
+                Lefèvbre, Patrick&nbsp;
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                80
+            </td>
+            <td>
+                2001
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=55596217">Distribution du revenu à l'intérieur du ménage : qu'en est-il du bien-être des enfants?.</a>
+            </td>
+            <td>
+                Lessard, Alex
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                81
+            </td>
+            <td>
+                2001
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=1007126476">Plans de sondage et estimation de l'erreur échantillonnale des indices de pauvreté et d'inegalité : une application pour le Burkina Faso.</a>
+            </td>
+            <td>
+                Fecteau, Steve
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                82
+            </td>
+            <td>
+                2000
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=1006904723">Impact des mesures d'employabilité sur le taux de récidive à l'aide sociale.</a>
+            </td>
+            <td>
+                Tremblay, Pierre-Renaud
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                83
+            </td>
+            <td>
+                1999
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=1017535646">La mesure de la discrimination homme/femme.</a>
+            </td>
+            <td>
+                Rain, Étienne
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                84
+            </td>
+            <td>
+                1999
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=1006665544">Analyse dynamique des transitions des jeunes sur le marché du travail.</a>
+            </td>
+            <td>
+                Gilbert, Lucie
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                85
+            </td>
+            <td>
+                1999
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=46582553">Estimation de l'inefficience dans les centres hospitaliers de soins généraux et spécialisés par un modèle de frontière.</a>
+            </td>
+            <td>
+                Diabomba, Mireille
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                86
+            </td>
+            <td>
+                1998
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=1006911582">Modèle de durée de type multi-états, multi-épisodes : les prestataires de l'aide de dernier recours.</a>
+            </td>
+            <td>
+                Pelletier, Denis
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                87
+            </td>
+            <td>
+                1998
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=46552573">Analyse de l'indice de pauvreté de Shorrocks et son application sur des données canadiennes.</a>
+            </td>
+            <td>
+                Grégoire, Philippe
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                88
+            </td>
+            <td>
+                1998
+            </td>
+            <td>
+                <a href="https://www.collectionscanada.gc.ca/obj/s4/f2/dsk2/ftp02/NQ31485.pdf">Deux essais sur l'analyse du marché du travail à Yaoundé (Cameroun).</a>
+            </td>
+            <td>
+                Marie-Chantal Benda
+            </td>
+            <td>
+                Doctorat (Codirecteur)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                89
+            </td>
+            <td>
+                1997
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=46561263">La dépendance dynamique des jeunes québécois à l'aide de dernier recours : un modèle économétrique avec épisodes multiples et hétérogénéité non-observable</a>
+            </td>
+            <td>
+                Éric Simard
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                90
+            </td>
+            <td>
+                1996
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=46504239">Dynamique de l'aide sociale au Québec de 1979 à 1993</a>
+            </td>
+            <td>
+                Christine Soucy
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                91
+            </td>
+            <td>
+                1994
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=35883793">Demande de soins de santé au Bénin une étude empirique du choix du lieux de traitement dans les communes de Pahou et Avlékété.</a>
+            </td>
+            <td>
+                Mensah, Omer Ayayi
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                92
+            </td>
+            <td>
+                1994
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=35942806">Une étude empirique de l'élasticité de la demande des soins de santé primaires au Bénin</a>
+            </td>
+            <td>
+                Roberge, Hélène
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                93
+            </td>
+            <td>
+                1993
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=31171498">Un modèle empirique du choix des semaines de travail et des heures hebdomadaires des femmes en présence de rationnement à la hausse</a>
+            </td>
+            <td>
+                Bernier, Rachel
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                94
+            </td>
+            <td>
+                1992
+            </td>
+            <td>
+                <a href="https://www.bac-lac.gc.ca/fra/services/theses/Pages/item.aspx?idNumber=1131102269">Une analyse microéconométrique des flux migratoires internes des canadiens d'adoption&nbsp;</a>
+            </td>
+            <td>
+                Lanouette, Anny
+            </td>
+            <td>
+                Mémoire de maîtrise
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+
+        -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // --- Bilingue (libellés UI seulement)
+    const I18N = {
+      fr: {
+        title: "Encadrements de mémoires et thèses",
+        subtitle: "Recherche, filtres et regroupement par année.",
+        search: "Recherche",
+        searchPh: "Nom, titre, programme…",
+        year: "Année",
+        all: "Toutes",
+        program: "Programme",
+        all2: "Tous",
+        openAll: "Tout ouvrir",
+        closeAll: "Tout fermer",
+        reset: "Réinitialiser",
+        count: (n, total) => `${n} / ${total} entrées`,
+        yearCount: (n) => `${n} entrée(s)`,
+        student: "Étudiant·e",
+        degree: "Programme",
+        notes: "Notes"
+      },
+      en: {
+        title: "Supervised theses and dissertations",
+        subtitle: "Search, filters, and grouping by year.",
+        search: "Search",
+        searchPh: "Name, title, program…",
+        year: "Year",
+        all: "All",
+        program: "Degree",
+        all2: "All",
+        openAll: "Expand all",
+        closeAll: "Collapse all",
+        reset: "Reset",
+        count: (n, total) => `${n} / ${total} entries`,
+        yearCount: (n) => `${n} entry(ies)`,
+        student: "Student",
+        degree: "Degree",
+        notes: "Notes"
+      }
+    };
+
+    let lang = "fr";
+    const t = () => I18N[lang];
+
+    // --- Lecture de vos <tr> existants, sans ressaisie
+    function parseRows() {
+      const tbody = document.getElementById("data-body");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const items = rows.map((tr) => {
+        const tds = Array.from(tr.querySelectorAll("td")).map(td => td.cloneNode(true));
+        const getText = (node) => (node.textContent || "").replace(/\s+/g," ").trim();
+
+        const idx = getText(tds[0] || tr);
+        const year = getText(tds[1] || tr);
+
+        // Titre : si lien <a>, on le garde
+        let titleHTML = "";
+        let titleText = "";
+        if (tds[2]) {
+          const a = tds[2].querySelector("a");
+          if (a) {
+            const href = a.getAttribute("href") || "";
+            titleText = getText(a);
+            titleHTML = `<a href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(titleText)}</a>`;
+          } else {
+            titleText = getText(tds[2]);
+            titleHTML = escapeHtml(titleText);
+          }
+        }
+
+        const student = getText(tds[3] || tr);
+        const program = getText(tds[4] || tr);
+        const notes = getText(tds[5] || tr);
+
+        const haystack = [
+          year, titleText, student, program, notes
+        ].join(" ").toLowerCase();
+
+        return { idx, year, titleHTML, titleText, student, program, notes, haystack };
+      }).filter(x => x.year || x.titleText || x.student || x.program);
+
+      return items;
+    }
+
+    function escapeHtml(s){
+      return (s || "").replace(/[&<>"']/g, (c) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[c]));
+    }
+
+    // --- UI
+    const q = document.getElementById("q");
+    const yearSel = document.getElementById("yearSel");
+    const progSel = document.getElementById("progSel");
+    const app = document.getElementById("app");
+    const fallback = document.getElementById("fallback");
+    const countPill = document.getElementById("countPill");
+
+    const langBtn = document.getElementById("langBtn");
+    const pageTitle = document.getElementById("pageTitle");
+    const pageSubtitle = document.getElementById("pageSubtitle");
+    const lblSearch = document.getElementById("lblSearch");
+    const lblYear = document.getElementById("lblYear");
+    const lblProg = document.getElementById("lblProg");
+    const expandAll = document.getElementById("expandAll");
+    const collapseAll = document.getElementById("collapseAll");
+    const resetBtn = document.getElementById("resetBtn");
+
+    let ALL = [];
+
+    function populateFilters(items){
+      const years = Array.from(new Set(items.map(x => x.year).filter(Boolean))).sort((a,b)=> Number(b)-Number(a));
+      const progs = Array.from(new Set(items.map(x => x.program).filter(Boolean))).sort((a,b)=> a.localeCompare(b));
+
+      // Years
+      yearSel.innerHTML = "";
+      const optAll = document.createElement("option");
+      optAll.value = "";
+      optAll.textContent = t().all;
+      yearSel.appendChild(optAll);
+      years.forEach(y=>{
+        const o=document.createElement("option");
+        o.value=y;
+        o.textContent=y;
+        yearSel.appendChild(o);
+      });
+
+      // Programs
+      progSel.innerHTML = "";
+      const optAll2 = document.createElement("option");
+      optAll2.value = "";
+      optAll2.textContent = t().all2;
+      progSel.appendChild(optAll2);
+      progs.forEach(p=>{
+        const o=document.createElement("option");
+        o.value=p;
+        o.textContent=p;
+        progSel.appendChild(o);
+      });
+    }
+
+    function applyI18n(){
+      pageTitle.textContent = t().title;
+      pageSubtitle.textContent = t().subtitle;
+      lblSearch.textContent = t().search;
+      q.placeholder = t().searchPh;
+      lblYear.textContent = t().year;
+      lblProg.textContent = t().program;
+      expandAll.textContent = t().openAll;
+      collapseAll.textContent = t().closeAll;
+      resetBtn.textContent = t().reset;
+      langBtn.textContent = (lang === "fr") ? "EN" : "FR";
+
+      // Repeupler les filtres (libellés "Toutes/Tous" changent)
+      populateFilters(ALL);
+
+      render();
+    }
+
+    function currentFiltered(){
+      const qq = (q.value || "").trim().toLowerCase();
+      const y = yearSel.value || "";
+      const p = progSel.value || "";
+
+      return ALL.filter(it=>{
+        if (y && it.year !== y) return false;
+        if (p && it.program !== p) return false;
+        if (qq && !it.haystack.includes(qq)) return false;
+        return true;
+      });
+    }
+
+    function render(){
+      const items = currentFiltered();
+      countPill.textContent = t().count(items.length, ALL.length);
+
+      // Regroupement par année
+      const byYear = new Map();
+      items.forEach(it=>{
+        const key = it.year || "—";
+        if (!byYear.has(key)) byYear.set(key, []);
+        byYear.get(key).push(it);
+      });
+
+      const years = Array.from(byYear.keys()).sort((a,b)=> Number(b)-Number(a));
+
+      app.innerHTML = years.map(year=>{
+        const list = byYear.get(year);
+        const cards = list.map(it=>`
+          <div class="entry" data-year="${escapeHtml(year)}">
+            <div class="entry-top">
+              <div>
+                <p class="title">${it.titleHTML || escapeHtml(it.titleText || "")}</p>
+                <p class="meta"><span class="muted">${t().student}:</span> ${escapeHtml(it.student || "")}</p>
+                <p class="meta"><span class="muted">${t().degree}:</span> ${escapeHtml(it.program || "")}</p>
+                ${it.notes ? `<p class="meta"><span class="muted">${t().notes}:</span> ${escapeHtml(it.notes)}</p>` : ``}
+              </div>
+              <div class="tags">
+                ${it.idx ? `<span class="tag">#${escapeHtml(it.idx)}</span>` : ``}
+              </div>
+            </div>
+          </div>
+        `).join("");
+
+        return `
+          <section class="year-group open" data-year="${escapeHtml(year)}">
+            <div class="year-header" role="button" tabindex="0" aria-expanded="true">
+              <div>
+                <strong>${escapeHtml(year)}</strong>
+                <span>• ${t().yearCount(list.length)}</span>
+              </div>
+              <span class="muted">▾</span>
+            </div>
+            <div class="year-content">
+              ${cards}
+            </div>
+          </section>
+        `;
+      }).join("");
+
+      // Masquer la table brute si on a rendu l’app
+      fallback.classList.add("hidden");
+
+      // Activer accordéons
+      document.querySelectorAll(".year-header").forEach(h=>{
+        h.addEventListener("click", ()=>toggleYear(h));
+        h.addEventListener("keydown", (e)=>{
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleYear(h); }
+        });
+      });
+    }
+
+    function toggleYear(header){
+      const group = header.closest(".year-group");
+      const isOpen = group.classList.toggle("open");
+      header.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      const arrow = header.querySelector("span.muted");
+      if (arrow) arrow.textContent = isOpen ? "▾" : "▸";
+    }
+
+    // Boutons
+    expandAll.addEventListener("click", ()=>{
+      document.querySelectorAll(".year-group").forEach(g=>{
+        g.classList.add("open");
+        const h = g.querySelector(".year-header");
+        if (h) h.setAttribute("aria-expanded","true");
+        const arrow = g.querySelector(".year-header span.muted");
+        if (arrow) arrow.textContent = "▾";
+      });
+    });
+
+    collapseAll.addEventListener("click", ()=>{
+      document.querySelectorAll(".year-group").forEach(g=>{
+        g.classList.remove("open");
+        const h = g.querySelector(".year-header");
+        if (h) h.setAttribute("aria-expanded","false");
+        const arrow = g.querySelector(".year-header span.muted");
+        if (arrow) arrow.textContent = "▸";
+      });
+    });
+
+    resetBtn.addEventListener("click", ()=>{
+      q.value = "";
+      yearSel.value = "";
+      progSel.value = "";
+      render();
+    });
+
+    // Filtres
+    q.addEventListener("input", render);
+    yearSel.addEventListener("change", render);
+    progSel.addEventListener("change", render);
+
+    // Langue
+    langBtn.addEventListener("click", ()=>{
+      lang = (lang === "fr") ? "en" : "fr";
+      applyI18n();
+    });
+
+    // Boot
+    ALL = parseRows();
+    populateFilters(ALL);
+    applyI18n();
+  </script>
 </body>
 </html>
