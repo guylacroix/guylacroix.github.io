@@ -2,8 +2,18 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="google-site-verification" content="XXXXXXXXXXXX" />
+    
+    <!-- Affichage mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Vérification Google (Search Console) -->
+    <meta name="google-site-verification" content="XXXXXXXXXXXX">
+
+    <!-- SEO -->
+    <meta name="description" content="Page personnelle de Guy Lacroix, professeur titulaire au Département d'économique, Université Laval. Contact et documents.">
+    
     <title>Guy Lacroix - Université Laval</title>
+
     <style>
         body {
             font-family: "Times New Roman", serif;
@@ -12,11 +22,12 @@
             padding: 0;
             text-align: center;
         }
-        .container {
-            margin-top: 5%;
+        main {
+            margin-top: 4%;
         }
         img {
-            width: 260px;
+            width: 220px;
+            max-width: 70%;
             border-radius: 6px;
             margin-bottom: 20px;
         }
@@ -25,7 +36,7 @@
             margin-bottom: 0.2em;
         }
         h2 {
-            font-size: 1.5em;
+            font-size: 1.3em;
             font-weight: normal;
             color: #444;
         }
@@ -34,21 +45,45 @@
             text-decoration: none;
             font-size: 1.1em;
         }
-        .links {
-            margin-top: 15px;
+        a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 30px;
+        }
+        li {
+            margin-bottom: 12px;
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
+    <main>
         <img src="googlesite.jpg" alt="Portrait de Guy Lacroix">
+
         <h1>Guy Lacroix</h1>
-        <h2>Département d'économique, Université Laval</h2>
-        <div class="links">
-            <p><a href="mailto:Guy.Lacroix@ecn.ulaval.ca">Guy.Lacroix@ecn.ulaval.ca</a></p>
-            <p><a href="https://www.fss.ulaval.ca/notre-faculte/repertoire-du-personnel/guy-lacroix" target="_blank">Page personnelle (Université Laval)</a></p>
-            <p></p><a href="Documents/transitions-scolaires-quebec.html">Une analyse des trajectoires scolaires au secondaire : Un modèle en chaîne de Markov(PDF)</a></p>
-        </div>
-    </div>
+        <h2>Département d’économique, Université Laval</h2>
+
+        <p>
+            <a href="mailto:Guy.Lacroix@ecn.ulaval.ca">Guy.Lacroix@ecn.ulaval.ca</a>
+        </p>
+        <p>
+            <a href="https://www.fss.ulaval.ca/notre-faculte/repertoire-du-personnel/guy-lacroix" 
+               target="_blank" rel="noopener">
+               Page personnelle (Université Laval)
+            </a>
+        </p>
+
+        <ul>
+            <li>
+                <a href="Documents/transitions-scolaires-quebec.pdf" target="_blank">
+                    Une analyse des trajectoires scolaires au secondaire : 
+                    un modèle en chaîne de Markov (PDF)
+                </a>
+            </li>
+        </ul>
+    </main>
 </body>
 </html>
