@@ -1,0 +1,87 @@
+name: Generate sitemap.xml
+
+on:
+  push:
+    branches: [ "main" ]   # ajuste si ta branche par défaut n'est pas "main"
+  workflow_dispatch:        # lancement manuel depuis l'onglet Actions
+  schedule:
+    - cron: "17 3 * * *"   # (UTC) exécute tous les jours à 03:17
+
+permissions:
+  contents: write           # nécessaire pour committer le sitemap
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set BASE_URL
+        run: |
+          # Ton domaine GitHub Pages
+          echo "BASE_URL=https://guylacroix.github.io" >> $GITHUB_ENV
+
+      - name: Generate sitemap.xml (Python)
+        run: |
+          python3 - << 'PYCODE'
+          import os, sys, datetime, xml.etree.ElementTree as ET
+
+          BASE_URL = os.getenv("BASE_URL", "https://guylacroix.github.io").rstrip("/")
+          ROOT = "."
+          # Extensions à indexer (ajoute .xml si tu veux lister d'autres ressources publiques)
+          INDEXABLE = {".html", ".htm", ".pdf"}
+          EXCLUDE_DIRS = {".git", ".github"}  # dossiers à ignorer
+          EXCLUDE_FILES = {"README.md", "CNAME"}  # fichiers à ignorer
+
+          urls = set()
+
+          # 1) Toujours ajouter la page d'accueil
+          urls.add(BASE_URL + "/")
+
+          # 2) Balayer le dépôt
+          for dirpath, dirnames, filenames in os.walk(ROOT):
+            # filtre dossiers exclus
+            dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS and not d.startswith(".")]
+            for f in filenames:
+              if f in EXCLUDE_FILES: 
+                continue
+              if f.startswith("."): 
+                continue
+              ext = os.path.splitext(f)[1].lower()
+              if ext in INDEXABLE:
+                rel_path = os.path.relpath(os.path.join(dirpath, f), ROOT)
+                # transformer index.html -> URL du dossier / ; sinon chemin direct
+                if rel_path.endswith("index.html") or rel_path.endswith("index.htm"):
+                  # Dossier contenant index.html
+                  folder = os.path.dirname(rel_path).replace("\\", "/").strip("/")
+                  url = BASE_URL + ("/" if not folder else f"/{folder}/")
+                else:
+                  url = BASE_URL + "/" + rel_path.replace("\\", "/")
+                urls.add(url)
+
+          # 3) Construire le sitemap XML
+          NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
+          ET.register_namespace("", NS)
+          urlset = ET.Element(ET.QName(NS, "urlset"))
+
+          # Tri pour la stabilité des diffs
+          for u in sorted(urls):
+            url_el = ET.SubElement(urlset, ET.QName(NS, "url"))
+            loc_el = ET.SubElement(url_el, ET.QName(NS, "loc"))
+            loc_el.text = u
+            # facultatif : date du jour (ISO 8601)
+            lastmod_el = ET.SubElement(url_el, ET.QName(NS, "lastmod"))
+            lastmod_el.text = datetime.date.today().isoformat()
+
+          tree = ET.ElementTree(urlset)
+          tree.write("sitemap.xml", encoding="utf-8", xml_declaration=True)
+          print(f"Generated sitemap.xml with {len(urls)} URLs")
+          PYCODE
+
+      - name: Commit sitemap.xml
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update sitemap.xml"
+          file_pattern: "sitemap.xml"
